@@ -51,8 +51,8 @@ Room.prototype.decorate = function(){
         var x = 2;
         var chosen_layout = layouts[Math.floor(Math.random()*layouts.length)];
         while( x < 8){
-            var scatter_layout = chosen_layout[Math.floor(Math.random()*layouts.length)];
-            var y = 0
+            var scatter_layout = chosen_layout[Math.floor(Math.random()*chosen_layout.length)];
+            var y = 2;
             while (y < 9) {
                 if (scatter_layout[y] == "i")
                     walls.push({x:x, y:y, display:idol_image, w:32, h:48, offset:16})
@@ -231,9 +231,13 @@ var core = [
 
 var layouts =[
 [
-[[ ],[ ],"i",[ ],"i",[ ],"i",[ ]," "],
+[[ ],[ ],[ ],[ ]," ",[ ]," ",[ ]," "],
 [[ ],[ ],"i",[ ]," ",[ ],"i",[ ]," "],
 [[ ],[ ],[ ],[ ]," ",[ ],"i",[ ]," "],
+[[ ],[ ]," ","i",[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],"i",[ ],[ ],[ ]],
+[[ ],"i",[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
 [[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
 [[ ]," "," ",[ ],"i",[ ],[ ],[ ],[ ]],
 [[ ]," ","i",[ ]," ",[ ],[ ],[ ],[ ]]

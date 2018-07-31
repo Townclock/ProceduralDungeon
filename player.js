@@ -1,6 +1,6 @@
 Player = function(){
     this.x = 32;
-    this.y = 64;
+    this.y = 96;
     this.keys = 100;
 
     this.tile = {x:0, y:0};

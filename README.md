@@ -1,2 +1,1 @@
-# Spectra
-A interactive art generator
+# ProceduralDungeon

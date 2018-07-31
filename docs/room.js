@@ -20,19 +20,63 @@ Room = function (x, y){
     });
     this.walls = walls;
     if (Math.random() < 0.5) {this.lock_doors()}
+
+    this.decorate();
 };
+
+Room.prototype.decorate = function(){
+    var type = Math.floor(Math.random()*5) + 1;
+    walls = this.walls;
+    if (type == 1 || type ==2){
+        console.log("core and periphery");
+        var selected_core = core[Math.floor(Math.random()*core.length)];
+        var x = 0, y=0;
+        selected_core.forEach(function(column){column.forEach(function(row){
+            if (row == "s")
+                walls.push({x:x, y:y, display:statue_image, w:32, h:64, offset:32});
+            if (row == "n")
+                walls.push({x:x, y:y, display:"none"});
+            if (row == "i")
+                walls.push({x:x, y:y, display:idol_image, w:64, h:96, offset:32});
+            if (row == "w")
+                walls.push({x:x, y:y, display:wall_image, w:32, h:32, offset:0});
+            if (row == "B")
+                walls.push({x:x, y:y, display:statue_image, w:96, h:192, offset:128});
+            y++;
+        })
+        x++;y=0;});
+    }
+    if (type == 3 || type == 4 || type == 5){
+        console.log("distribution");
+        var x = 2;
+        var chosen_layout = layouts[Math.floor(Math.random()*layouts.length)];
+        while( x < 8){
+            var scatter_layout = chosen_layout[Math.floor(Math.random()*layouts.length)];
+            var y = 0
+            while (y < 9) {
+                if (scatter_layout[y] == "i")
+                    walls.push({x:x, y:y, display:idol_image, w:32, h:48, offset:16})
+                if (scatter_layout[y] == "s")
+                    walls.push({x:x, y:y, display:statue_image, w:32, h:64, offset:32})
+            y++;
+            }
+        x++;
+       }
+    }
+}
 
 Room.prototype.draw = function(){
     var x = this.x;
     var y = this.y;
     this.walls.forEach(function(wall){
-    if (!wall.display) wall.display = wall_image;
+    if (wall.display == undefined) {wall.display = wall_image; wall.w = 32; wall.h=32; wall.offset = 0};
+       if (wall.display != "none")
        image(
             wall.display,
             x*320 - cam.x*320 + wall.x*32,
-            y*288 - cam.y*288 + wall.y*32,
-            32,
-            32
+            y*288 - cam.y*288 + wall.y*32 - wall.offset,
+            wall.w,
+            wall.h
             );
     });
 }
@@ -47,30 +91,26 @@ Room.prototype.lock_doors = function(){
         if (lock.y == 8) lock.y--;
         lock.locked = true;
         lock.display = lock_image;
+        lock.w = 32; lock.h=32;lock.offset=0;
         locks.push(lock);
     });
-    console.log(locks)
         while (locks.length > 0){
             var lock = locks.pop();
-            console.log(lock);
             var locks_to_remove = [];
             locks.forEach(function(lock_2) {
             if (lock !== lock_2 && lock.x == lock_2.x && lock.y == lock_2.y){
                 locks_to_remove.push(lock_2);
-                console.log("redundant lock destoyed", lock, lock_2);}
+                }
                 })
             locks_to_remove.forEach(function(l){locks.splice(locks.indexOf(l), 1)});
             final_locks.push(lock);
-            console.log(locks.length);
         };
-                console.log(final_locks);
     this.walls = this.walls.concat(final_locks);
 }
 
 function generate_doors(x, y) {
     var doors = [];
     var impossible_doors = [{x:0, y:0},{x:0, y:0},{x:0, y:0},{x:0, y:0}];
-        console.log(impossible_doors, "impdoor");
         if (world.rooms[(x+1)+","+y]){
                     impossible_doors[0] = {x:9, y:4};
             world.rooms[(x+1)+","+y].doors.forEach(function(r){
@@ -82,7 +122,6 @@ function generate_doors(x, y) {
                 }
                })
         }
-        console.log(impossible_doors, "impdoor 1");
         if (world.rooms[(x-1)+","+y]){
                     impossible_doors[1] = {x:0, y:4};
             world.rooms[(x-1)+","+y].doors.forEach(function(r){
@@ -93,7 +132,6 @@ function generate_doors(x, y) {
                 }
                })
         }
-        console.log(impossible_doors, "impdoor 2");
 
         if (world.rooms[x+","+(y+1)]){
                     impossible_doors[2] = {x:5, y:8};
@@ -105,7 +143,6 @@ function generate_doors(x, y) {
                 }
                })
         }
-        console.log(impossible_doors, "impdoor 3");
         if (world.rooms[x+","+(y-1)]){
                     impossible_doors[3] = {x:5, y:0};
             world.rooms[x+","+(y-1)].doors.forEach(function(r){
@@ -116,8 +153,6 @@ function generate_doors(x, y) {
                 }
                })
         }
-        console.log(impossible_doors, "impdoor 4");
-    //if (impossible_doors.lengt == 4) {console.log("Warning: all doors impossibe"); impossible_doors = [];}
     while (doors.length < 2){
         if (Math.random() > 0.5){
             doors.push({x:0, y:4});
@@ -139,7 +174,76 @@ function generate_doors(x, y) {
         });
     }
     return doors;
-}
+    }
 
-var room_components = [
-];
+var core = [
+[
+[[],[],[],[],[],[],[],[],[]],
+[[],"s",[],[],[],[],[],"s",[]],
+[[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],"i","n",[],[],[]],
+[[],[],[],[],"n","n",[],[],[]],
+[[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[]],
+[[],"s",[],[],[],[],[],"s",[]],
+[[],[],[],[],[],[],[],[],[]
+]
+],
+
+[
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ]," ","B","n",[ ],[ ],[ ]],
+[[ ],[ ],[ ]," ","n","n",[ ],[ ],[ ]],
+[[ ],[ ],[ ]," ","n","n",[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]]
+],
+[
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],"w","w","w","w","w",[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]]
+],
+[
+[[ ], [],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],[ ],[ ],[ ],[ ],[ ],"s",[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],[ ],[ ],[ ],[ ],[ ],"s",[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],"s",[ ],[ ],"s",[ ],[ ],[ ]],
+[[ ], [],[ ],[ ],[ ],[ ],[ ],[ ],[ ]]
+],
+]
+
+var layouts =[
+[
+[[ ],[ ],"i",[ ],"i",[ ],"i",[ ]," "],
+[[ ],[ ],"i",[ ]," ",[ ],"i",[ ]," "],
+[[ ],[ ],[ ],[ ]," ",[ ],"i",[ ]," "],
+[[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ]," "," ",[ ],"i",[ ],[ ],[ ],[ ]],
+[[ ]," ","i",[ ]," ",[ ],[ ],[ ],[ ]]
+],
+
+[
+[[ ],[ ]," ",[ ],[ ],"s"," ",[ ],[ ]],
+[[ ], [],[ ],[ ],[ ],[ ],[ ],[ ],[ ]],
+[[ ],[ ]," ",[ ],"s",[ ]," ",[ ],[ ]],
+[[ ],[ ],"s",[ ],[ ],[ ]," ",[ ],[ ]],
+[[ ],[ ]," ",[ ],[ ],[ ],"s",[ ],[ ]]
+]
+]

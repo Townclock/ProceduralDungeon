@@ -17,7 +17,7 @@ var world = {
     },
 }
 
-var idol, wall, lock,statue;
+var idol_image, wall_image, lock_image, statue_image;
 function setup() {
     createCanvas(320, 288);
     background(0);
@@ -25,6 +25,7 @@ function setup() {
     wall_image = loadImage("images/wall.png");
     lock_image = loadImage("images/lock.png");
     statue_image = loadImage("images/statue.png");
+    player_image = loadImage("images/player.png");
 }
 
 function draw() {
@@ -34,10 +35,9 @@ function draw() {
     }
 
 
-    fill(0, 200, 0);
-    background(0)
-    world.draw_rooms();
+    background("#0f380f");
     player.draw();
+    world.draw_rooms();
 }
 
 
